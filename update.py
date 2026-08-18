@@ -1,9 +1,15 @@
 import json
+import time
 import urllib.request
 import xml.etree.ElementTree as ET
 
-FEED = 'https://www.goodreads.com/review/list_rss/15832103?shelf=currently-reading'
-req = urllib.request.Request(FEED, headers={'User-Agent': 'Mozilla/5.0'})
+# Add a cache-busting query parameter so Goodreads does not return a stale RSS response.
+FEED = f'https://www.goodreads.com/review/list_rss/15832103?shelf=currently-reading&_={int(time.time())}'
+req = urllib.request.Request(FEED, headers={
+    'User-Agent': 'Mozilla/5.0 (compatible; GoodreadsSignature/1.0)',
+    'Cache-Control': 'no-cache',
+    'Pragma': 'no-cache',
+})
 with urllib.request.urlopen(req, timeout=30) as response:
     root = ET.fromstring(response.read())
 
